@@ -1,0 +1,89 @@
+#!/bin/sh
+# autopkgtest check: Build and run a program against pygobject, to verify that
+# the headers and pkg-config file are installed correctly
+# (C) 2012 Canonical Ltd.
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+
+set -e
+
+WORKDIR=$(mktemp -d)
+trap 'rm -rf "$WORKDIR"' 0 INT QUIT ABRT PIPE TERM
+cd "$WORKDIR"
+
+if [ -n "${DEB_HOST_GNU_TYPE:-}" ]; then
+    CROSS_COMPILE="$DEB_HOST_GNU_TYPE-"
+else
+    CROSS_COMPILE=
+fi
+
+cat <<EOF > pytest.c
+#include <Python.h>
+#include <pygobject.h>
+#include <assert.h>
+
+int main()
+{
+    PyObject *gobject;
+
+    Py_UnbufferedStdioFlag = 1;
+    Py_InitializeEx (FALSE);
+    if (PyErr_Occurred ()) {
+        PySys_WriteStderr ("Error in Py_InitializeEx\n");
+        PyErr_Print ();
+        return 1;
+    }
+    gobject = pygobject_init (-1, -1, -1);
+    if (PyErr_Occurred ()) {
+        PySys_WriteStderr ("Error in pygobject_init\n");
+        PyErr_Print ();
+        return 2;
+    }
+    assert (gobject != NULL);
+    return 0;
+}
+EOF
+
+failed=
+
+for version in $(py3versions -sv); do
+    for tail in "" "-dbg"; do
+        v="${version}${tail}"
+
+        case "$version" in
+            (3.[0-7])
+                pkg="python-$v"
+                ;;
+
+            (*)
+                case "$tail" in
+                    (-dbg)
+                        # There is no python-3.8-dbg-embed.pc yet (#944852)
+                        pkg="python-${version}d-embed"
+                        ;;
+                    (*)
+                        pkg="python-${v}-embed"
+                        ;;
+                esac
+                ;;
+        esac
+
+        # Deliberately word-splitting, that's how pkg-config works:
+        # shellcheck disable=SC2046
+        if "${CROSS_COMPILE}gcc" -o "pytest$v" pytest.c $("${CROSS_COMPILE}pkg-config" --cflags --libs "$pkg" pygobject-3.0); then
+            echo "build ($v): OK"
+            [ -x "pytest$v" ]
+            if ./"pytest$v"; then
+                echo "run ($v): OK"
+            else
+                echo "run ($v): FAILED"
+                failed=yes
+            fi
+        else
+            echo "build ($v): FAILED"
+            failed=yes
+        fi
+    done
+done
+if [ -n "$failed" ]; then
+    exit 1
+fi

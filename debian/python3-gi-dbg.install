@@ -1,0 +1,2 @@
+#! /usr/bin/dh-exec
+usr/lib/python3*/*-packages/gi/*.cpython-*d*-${DEB_HOST_MULTIARCH}.so
