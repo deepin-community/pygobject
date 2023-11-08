@@ -620,20 +620,25 @@ end:
             async_free_list = g_slist_prepend (async_free_list, closure);
             break;
         default:
-            g_error ("Invalid scope reached inside %s.  Possibly a bad annotation?",
-                     g_base_info_get_name (closure->info));
+            /* Handle new scopes added by gobject-introspection */
+            g_critical ("Unknown scope reached inside %s. Please file an issue "
+                        "at https://gitlab.gnome.org/GNOME/pygobject/issues/new",
+                        g_base_info_get_name (closure->info));
     }
 
     _invoke_state_clear (&state);
     PyGILState_Release (py_state);
 }
 
-void _pygi_invoke_closure_free (gpointer data)
+void _pygi_invoke_closure_free (PyGICClosure* invoke_closure)
 {
-    PyGICClosure* invoke_closure = (PyGICClosure *) data;
-
+#if GI_CHECK_VERSION (1, 72, 0)
+    g_callable_info_destroy_closure (invoke_closure->info,
+                                     invoke_closure->closure);
+#else
     g_callable_info_free_closure (invoke_closure->info,
                                   invoke_closure->closure);
+#endif
 
     if (invoke_closure->info)
         g_base_info_unref ( (GIBaseInfo*) invoke_closure->info);
@@ -651,7 +656,7 @@ _pygi_make_native_closure (GICallableInfo* info,
                            PyGIClosureCache *cache,
                            GIScopeType scope,
                            PyObject *py_function,
-                           gpointer py_user_data)
+                           PyObject *py_user_data)
 {
     PyGICClosure *closure;
     ffi_closure *fficlosure;
@@ -670,9 +675,16 @@ _pygi_make_native_closure (GICallableInfo* info,
     Py_INCREF (py_function);
     Py_XINCREF (closure->user_data);
 
+#if GI_CHECK_VERSION (1, 72, 0)
+    fficlosure =
+        g_callable_info_create_closure (info, &closure->cif, _pygi_closure_handle,
+                                        closure);
+#else
     fficlosure =
         g_callable_info_prepare_closure (info, &closure->cif, _pygi_closure_handle,
                                          closure);
+#endif
+
     closure->closure = fficlosure;
 
     /* Give the closure the information it needs to determine when
@@ -751,7 +763,15 @@ _pygi_marshal_from_py_interface_callback (PyGIInvokeState   *state,
     closure = _pygi_make_native_closure (
         callable_info, callback_cache->closure_cache, callback_cache->scope,
         py_arg, py_user_data);
+
+#if GI_CHECK_VERSION (1, 72, 0)
+    if (closure->closure != NULL)
+        arg->v_pointer = g_callable_info_get_closure_native_address (callable_info, closure->closure);
+    else
+        arg->v_pointer = NULL;
+#else
     arg->v_pointer = closure->closure;
+#endif
 
     /* always decref the user data as _pygi_make_native_closure adds its own ref */
     Py_XDECREF (py_user_data);

@@ -15,7 +15,6 @@ endif
 export PYBUILD_BEFORE_TEST = {interpreter} {dir}/setup.py build_tests
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
 	dh $@ --buildsystem=pybuild
@@ -43,7 +42,6 @@ endif
 
 override_dh_python3:
 	dh_python3 -O--buildsystem=pybuild
-	find debian/python3-gi-cairo  debian/python3-gi -name '*.cpython-*dm-*so' | xargs -r rm -fv
 
 override_dh_auto_install:
 	dh_auto_install
@@ -61,6 +59,7 @@ override_dh_install:
 
 override_dh_strip-arch:
 	dh_strip -ppython3-gi --dbg-package=python3-gi-dbg
+	dh_strip -ppython3-gi-cairo --dbg-package=python3-gi-dbg
 	dh_strip -a --remaining-packages --no-automatic-dbgsym
 
 # Do not run dh_makeshlibs, for some reasons the python bindings are build with
@@ -70,6 +69,3 @@ override_dh_makeshlibs:
 
 override_dh_installchangelogs:
 	dh_installchangelogs -XChangeLog
-
-override_dh_missing:
-	dh_missing --fail-missing

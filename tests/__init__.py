@@ -6,7 +6,23 @@ import atexit
 import warnings
 
 
+def set_dll_search_path():
+    # Python 3.8 no longer searches for DLLs in PATH, so we have to add
+    # everything in PATH manually. Note that unlike PATH add_dll_directory
+    # has no defined order, so if there are two cairo DLLs in PATH we
+    # might get a random one.
+    if os.name != "nt" or not hasattr(os, "add_dll_directory"):
+        return
+    for p in os.environ.get("PATH", "").split(os.pathsep):
+        try:
+            os.add_dll_directory(p)
+        except OSError:
+            pass
+
+
 def init_test_environ():
+
+    set_dll_search_path()
 
     def dbus_launch_session():
         if os.name == "nt" or sys.platform == "darwin":
@@ -44,8 +60,10 @@ def init_test_environ():
     # force untranslated messages, as we check for them in some tests
     os.environ['LC_MESSAGES'] = 'C'
     os.environ['G_DEBUG'] = 'fatal-warnings fatal-criticals'
-    if sys.platform == "darwin":
-        # gtk 3.22 has warnings and ciriticals on OS X, ignore for now
+    if sys.platform == "darwin" or os.name == "nt":
+        # gtk 3.22 has warnings and ciriticals on OS X, ignore for now.
+        # On Windows glib will create an error dialog which will block tests
+        # so it's never a good idea there to make things fatal.
         os.environ['G_DEBUG'] = ''
 
     # make Gio able to find our gschemas.compiled in tests/. This needs to be set

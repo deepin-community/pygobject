@@ -1,3 +1,84 @@
+3.46.0 - 2023-09-10
+-------------------
+
+* build: Drop Python 3.7 support :mr:`238`
+* build: Require glib 2.64 and gobject-introspection 1.64 :mr:`243`
+* Add support for Python 3.12 (minor test fixes) :mr:`247`
+* Drop GTK 2 support (after being effectively unsupported for 12 years) :mr:`182`
+* meson: Require meson 0.56.0 :mr:`220`
+* meson: Set PYTHONPATH in devenv :mr:`235`
+* meson: define pycairo_dep in case pycairo=disabled :mr:`242`
+* meson: Use pycairo from target python before pkg-config :mr:`223`
+* Complete the PEP-451 implementation in gi.importer :mr:`229`
+* Replace usage of deprecated FFI closure API :mr:`241`
+* Fix invalid marshalling in some cases for boxed values, for example with
+  Gtk.StyleContext.get_property() :mr:`213`
+* Consistent setting of enum and flag property :mr:`192`
+* Fix docstring for methods that return an array and have a length (out) argument :mr:`249`
+* overrides: Fix incompatibility for CssProvider.load_from_data() (GTK 4.10) :mr:`231`
+* overrides: Allow Gdk.{Color,RGBA} instances to be compared with other objects :mr:`233`
+* overrides: Add overrides for Gdk.FileList in Gdk-4.0 :mr:`245`
+* docs: Fix underline too short warning :mr:`246`
+* docs: Fix build failure due to extlinks with Sphinx 6 :mr:`244`
+* docs: List additional projects using PyGObject :mr:`230`
+* docs: Update Development Environment Docs :mr:`232`
+* docs: Update docs and code examples to GTK 4 :mr:`215`
+
+
+3.44.1 - 2023-03-24
+-------------------
+
+* Fix tests with glib 2.76 :mr:`240`
+
+
+3.44.0 - 2023-03-19
+-------------------
+
+No changes compared to 3.43.1
+
+
+3.43.1 - 2023-01-28
+-------------------
+
+* Note: PyGObject is in need of more maintainers, please read
+  https://www.bassi.io/articles/2022/12/02/on-pygobject/
+* Note: This is an unstable release.
+
+* Drop support for Python 3.6 :mr:`184`
+* meson: bump minimum version to 0.53.0 and update subprojects :mr:`227`
+* gimodule: fix floating state of python objects created with g_object_new :mr:`129`
+* Gtk.Template: Accept PathLike objects as a filename :mr:`195`
+* info: Show which type/object callables are bound to :mr:`194`
+* IntrospectionModule: handle two threads loading type at same time :mr:`149`
+* Port to Py_TRASHCAN_BEGIN :mr:`226`
+* Other cleanups/improvements: :mr:`181` :mr:`173`
+* This release also includes all changes from 3.42.1 and 3.42.2
+
+
+3.42.2 - 2022-07-16
+-------------------
+
+* Error out instead of crashing when marshaling unsupported fundamental types in some cases :mr:`180`
+* Add a workaround for a PyPy 3.9+ bug when threads are used :mr:`200`
+* Fix crashes when marshaling zero terminated arrays for certain item types :mr:`191`
+* Fix a crash/refcounting error in case marshaling a hash table fails :mr:`191`
+* Make the test suite pass again with PyPy :mr:`191`
+* tests: support running tests with (MSVC) CPython 3.8+ on Windows :mr:`206`
+* interface: Fix leak when overriding GInterfaceInfo :mr:`204`
+* setup.py: look up pycairo headers without importing the module
+  (helps with building on Windows and MSVC CPython 3.8+) :mr:`205`
+
+
+3.42.1 - 2022-04-17
+-------------------
+
+* Do not error out for unknown scopes :mr:`179`
+* gtk overrides: restore Gtk.ListStore.insert_with_valuesv with newer gtk4 :issue:`467`
+* gtk overrides: Do not override Treeview.enable_model_drag_xx for GTK4 :mr:`175`
+* Implement DynamicImporter.find_spec() to silence a deprecation warning with Python 3.10 :issue:`473`
+* Some test/CI fixes
+
+
 3.42.0 - 2021-09-19
 -------------------
 

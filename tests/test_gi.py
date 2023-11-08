@@ -637,7 +637,7 @@ class TestGType(unittest.TestCase):
 
         errors = (AttributeError,)
         if platform.python_implementation() == "PyPy":
-            # https://bitbucket.org/pypy/pypy/issues/2788
+            # https://foss.heptapod.net/pypy/pypy/-/issues/2788
             errors = (AttributeError, TypeError)
 
         self.assertRaises(errors, check_readonly, GObject.TYPE_NONE)
@@ -920,7 +920,6 @@ class TestArray(unittest.TestCase):
         result = list(CONSTANT_UCS4)
         assert GIMarshallingTests.array_unichar_out() == result
 
-    @unittest.skip("broken")
     def test_array_zero_terminated_return_unichar(self):
         assert GIMarshallingTests.array_zero_terminated_return_unichar() == \
             list(CONSTANT_UCS4)
@@ -1574,9 +1573,12 @@ class TestGValue(unittest.TestCase):
         self.assertRaises(OverflowError, GIMarshallingTests.gvalue_flat_array,
                           [GLib.MININT - 1, "42", True])
 
+        # FIXME: https://gitlab.gnome.org/GNOME/pygobject/-/issues/582#note_1764164
+        exc_prefix = "Item 0: " if sys.version_info[:2] < (3, 12) else ""
+
         with pytest.raises(
                 OverflowError,
-                match='Item 0: %d not in range %d to %d' % (
+                match=exc_prefix + '%d not in range %d to %d' % (
                     GLib.MAXINT + 1, GLib.MININT, GLib.MAXINT)):
             GIMarshallingTests.gvalue_flat_array([GLib.MAXINT + 1, "42", True])
 
@@ -1584,7 +1586,7 @@ class TestGValue(unittest.TestCase):
 
         with pytest.raises(
                 OverflowError,
-                match='Item 0: %d not in range %d to %d' % (
+                match=exc_prefix + '%d not in range %d to %d' % (
                     GLib.MAXUINT64 * 2, min_, max_)):
             GIMarshallingTests.gvalue_flat_array([GLib.MAXUINT64 * 2, "42", True])
 
@@ -1601,7 +1603,6 @@ class TestGValue(unittest.TestCase):
         gc.collect()
         assert obj.__grefcount__ == grefcount
 
-    @unittest.skipIf(platform.python_implementation() == "PyPy", "fixme")
     def test_gvalue_gobject_ref_counts(self):
         # Tests a GObject held by a GValue
         obj = GObject.Object()

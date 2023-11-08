@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 import sys
 from gi.repository import GLib
@@ -10,7 +12,10 @@ class TestGI(unittest.TestCase):
 
     def test_glib_flag(self):
         '''GLib flag'''
-        self.assertEqual(GLib.IOFlags.IS_READABLE.value_nicks, ['is_readable'])
+        nicks = set(GLib.IOFlags.IS_READABLE.value_nicks)
+        # https://gitlab.gnome.org/GNOME/pygobject/-/issues/542
+        nicks.discard('none')
+        self.assertEqual(nicks, set(['is_readable']))
 
     def test_method(self):
         '''GLib method call'''
