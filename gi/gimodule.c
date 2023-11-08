@@ -1066,10 +1066,14 @@ static void
 pygobject__g_instance_init(GTypeInstance   *instance,
                            gpointer         g_class)
 {
-    GObject *object = (GObject *) instance;
+    GObject *object;
     PyObject *wrapper, *result;
     PyGILState_STATE state;
     gboolean needs_init = FALSE;
+
+    g_return_if_fail(G_IS_OBJECT(instance));
+
+    object = (GObject *) instance;
 
     wrapper = g_object_get_qdata(object, pygobject_wrapper_key);
     if (wrapper == NULL) {
@@ -1087,9 +1091,18 @@ pygobject__g_instance_init(GTypeInstance   *instance,
           /* this looks like a python object created through
            * g_object_new -> we have no python wrapper, so create it
            * now */
-        wrapper = pygobject_new_full(object,
-                                     /*steal=*/ FALSE,
-                                     g_class);
+
+        if (g_object_is_floating (object)) {
+            g_object_ref (object);
+            wrapper = pygobject_new_full(object,
+                                         /*steal=*/ TRUE,
+                                         g_class);
+            g_object_force_floating (object);
+        } else {
+            wrapper = pygobject_new_full(object,
+                                         /*steal=*/ FALSE,
+                                         g_class);
+        }
 
         /* float the wrapper ref here because we are going to orphan it
          * so we don't destroy the wrapper. The next call to pygobject_new_full
@@ -1312,7 +1325,7 @@ pyg_type_register(PyTypeObject *class, const char *type_name)
 
     /* store pointer to the class with the GType */
     Py_INCREF(class);
-    g_type_set_qdata(instance_type, g_quark_from_string("PyGObject::class"),
+    g_type_set_qdata(instance_type, pygobject_class_key,
 		     class);
 
     /* Mark this GType as a custom python type */
@@ -1738,6 +1751,7 @@ _wrap_pyg_register_interface_info (PyObject *self, PyObject *args)
     info->interface_init = (GInterfaceInitFunc) initialize_interface;
 
     pyg_register_interface_info (g_type, info);
+    g_free (info);
 
     Py_RETURN_NONE;
 }
@@ -1845,7 +1859,11 @@ _wrap_pyg_hook_up_vfunc_implementation (PyObject *self, PyObject *args)
         closure = _pygi_make_native_closure ( (GICallableInfo*) callback_info, cache,
                                               GI_SCOPE_TYPE_NOTIFIED, py_function, NULL);
 
+#if GI_CHECK_VERSION (1, 72, 0)
+        *method_ptr = g_callable_info_get_closure_native_address (callback_info, closure->closure);
+#else
         *method_ptr = closure->closure;
+#endif
 
         g_base_info_unref (interface_info);
         g_base_info_unref (type_info);
@@ -2522,8 +2540,9 @@ PYGI_MODINIT_FUNC PyInit__gi(void) {
     module = PyModule_Create(&__gimodule);
     PyObject *module_dict = PyModule_GetDict (module);
 
-#if PY_VERSION_HEX < 0x03090000
+#if PY_VERSION_HEX < 0x03090000 || defined(PYPY_VERSION)
     /* Deprecated since 3.9 */
+    /* Except in PyPy it's still not a no-op: https://foss.heptapod.net/pypy/pypy/-/issues/3691 */
 
     /* Always enable Python threads since we cannot predict which GI repositories
      * might accept Python callbacks run within non-Python threads or might trigger

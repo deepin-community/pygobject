@@ -1,3 +1,95 @@
+pygobject (3.46.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/control.in: Bump minimum glib and gobject-introspection
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 11 Sep 2023 08:31:18 -0400
+
+pygobject (3.44.1-2) unstable; urgency=medium
+
+  * Update standards version to 4.6.2, no changes needed
+  * Release to unstable
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Sun, 23 Jul 2023 15:27:48 -0400
+
+pygobject (3.44.1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 27 Mar 2023 06:49:29 -0400
+
+pygobject (3.43.1-1) experimental; urgency=medium
+
+  [ Jeremy Bicha ]
+  * New upstream release
+
+  [ Simon McVittie ]
+  * d/control.in: Follow upstream home page migration (Closes: #1028288)
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 23 Feb 2023 18:10:07 -0500
+
+pygobject (3.42.2-3) unstable; urgency=medium
+
+  * Team upload
+
+  [ Evangelos Ribeiro Tzaras ]
+  * d/rules: Clean up all build files (Closes: #1019132)
+
+  [ Simon McVittie ]
+  * d/clean: Move cleanup for #1019132 from d/rules to here
+  * Build-depend on dbus-daemon instead of dbus.
+    The part we need is dbus-run-session, and we don't need the full
+    system bus.
+  * d/upstream/metadata: Update Gitlab URLs
+  * Update standards version to 4.6.1 (no changes needed)
+  * Avoid explicitly specifying -Wl,--as-needed linker flag
+  * d/control.in, d/rules: Make sure all debug symbols go into
+    python3-gi-dbg, including those for python3-gi-cairo
+
+ -- Simon McVittie <smcv@debian.org>  Tue, 15 Nov 2022 10:12:45 +0000
+
+pygobject (3.42.2-2) unstable; urgency=medium
+
+  * Team upload
+  * d/tests/gitest.py: Fix autopkgtest failure with gobject-introspection
+    1.73.
+    This test assumed that G_IO_FLAG_NONE doesn't exist, but that's no
+    longer the case as of GLib 2.73.x. Change it to work either way.
+
+ -- Simon McVittie <smcv@debian.org>  Sat, 20 Aug 2022 11:35:24 +0100
+
+pygobject (3.42.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 27 Jul 2022 17:09:53 -0400
+
+pygobject (3.42.1-1) unstable; urgency=medium
+
+  [ Jeremy Bicha ]
+  * New upstream release
+  * Drop python3.10 patch: applied in new release
+  * Bump Standards-Version to 4.6.0
+
+  [ Simon McVittie ]
+  * Use debhelper compat level 13
+    - We no longer need dh-exec for ${DEB_HOST_MULTIARCH} substitutions
+    - Stop overriding dh_missing to add --fail-missing, it is now
+      the default
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 18 Apr 2022 09:33:38 -0400
+
+pygobject (3.42.0-3) unstable; urgency=medium
+
+  * Team upload
+  * d/tests/control: Accept and ignore warnings on stderr in python3-all
+    test. This works around pygobject not fully implementing PEP-0451 yet
+    (#1002662) by making it non-RC. It might become RC again in a future
+    Python release, but hopefully upstream can implement PEP-0451 by
+    then. (Closes: #1001368)
+
+ -- Simon McVittie <smcv@debian.org>  Sun, 26 Dec 2021 21:24:46 +0000
+
 pygobject (3.42.0-2) unstable; urgency=medium
 
   * debian/patches/git_python310_warning.patch:

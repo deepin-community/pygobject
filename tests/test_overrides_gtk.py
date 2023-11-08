@@ -62,6 +62,7 @@ def realized(widget):
             window.set_child(widget)
         else:
             window.add(widget)
+        window.show()
 
     widget.realize()
     if Gtk._version == "4.0":
@@ -786,7 +787,7 @@ class TestGtk(unittest.TestCase):
 
     @unittest.skipIf(sys.platform == "darwin", "crashes")
     @unittest.skipIf(GTK4, "uses lots of gtk3 only api")
-    def test_drag_target_list_gtk3(self):
+    def test_tree_view_drag_target_list_gtk3(self):
         mixed_target_list = [Gtk.TargetEntry.new('test0', 0, 0),
                              ('test1', 1, 1),
                              Gtk.TargetEntry.new('test2', 2, 2),
@@ -817,6 +818,19 @@ class TestGtk(unittest.TestCase):
 
         treeview.enable_model_drag_dest(mixed_target_list,
                                         Gdk.DragAction.DEFAULT | Gdk.DragAction.MOVE)
+
+    @unittest.skipUnless(GTK4, "gtk4 only")
+    def test_tree_view_drag_content_formats_gtk4(self):
+        content_formats = Gdk.ContentFormats.new(
+            ["application/json", "GTK_TREE_MODEL_ROW"]
+        )
+        treeview = Gtk.TreeView()
+        treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK,
+                                          content_formats,
+                                          Gdk.DragAction.MOVE)
+
+        treeview.enable_model_drag_dest(content_formats,
+                                        Gdk.DragAction.MOVE)
 
     @unittest.skipIf(Gtk_version == "4.0", "not in gtk4")
     def test_scrollbar(self):
@@ -1375,6 +1389,20 @@ class TestCustomSorter():
         expected_result = ["ringo", "paul", "john", "george"]
         for result, member in zip(new_sort_model, expected_result):
             assert result.props.name == member
+
+
+@unittest.skipUnless(Gtk, 'Gtk not available')
+class TestListStore(unittest.TestCase):
+
+    def test_insert_with_values(self):
+        model = Gtk.ListStore(int)
+        assert hasattr(model, 'insert_with_values')
+        iter_ = model.insert_with_values(0, (0,), [42])
+        assert isinstance(iter_, Gtk.TreeIter)
+        assert hasattr(model, 'insert_with_valuesv')
+        iter_ = model.insert_with_valuesv(0, (0,), [43])
+        assert isinstance(iter_, Gtk.TreeIter)
+        assert len(model) == 2
 
 
 @ignore_gi_deprecation_warnings
@@ -2999,3 +3027,15 @@ def test_button_focus_on_click():
     assert b.get_focus_on_click()
     b.set_focus_on_click(False)
     assert not b.get_focus_on_click()
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        "* { background: white; }",
+        "* { background: white; }".encode()
+    ]
+)
+def test_css_provider_load_from_data(data):
+    provider = Gtk.CssProvider.new()
+    provider.load_from_data(data)

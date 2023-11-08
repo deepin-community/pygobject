@@ -4,17 +4,15 @@ Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: at-spi2-core <!nocheck>,
-               dbus (>= 1.8) <!nocheck>,
-               debhelper-compat (= 12),
-               dh-exec,
+               dbus-daemon <!nocheck>,
+               debhelper-compat (= 13),
                dh-sequence-gnome,
                dh-sequence-python3,
-               dpkg-dev (>= 1.16.1~),
                gir1.2-gtk-3.0 <!nocheck>,
                libcairo2-dev,
                libffi-dev (>= 3.3),
-               libgirepository1.0-dev (>= 1.62.0-4~),
-               libglib2.0-dev (>= 2.56.0),
+               libgirepository1.0-dev (>= 1.64.0~),
+               libglib2.0-dev (>= 2.64.0),
                locales <!nocheck>,
                python3-all-dbg,
                python3-all-dev,
@@ -25,15 +23,15 @@ Build-Depends: at-spi2-core <!nocheck>,
                xauth <!nocheck>,
                xvfb <!nocheck>
 Rules-Requires-Root: no
-Standards-Version: 4.5.1
+Standards-Version: 4.6.2
 Vcs-Browser: https://salsa.debian.org/gnome-team/pygobject
 Vcs-Git: https://salsa.debian.org/gnome-team/pygobject.git
-Homepage: https://wiki.gnome.org/Projects/PyGObject
+Homepage: https://pygobject.readthedocs.io/
 
 Package: python3-gi
 Architecture: any
 Multi-Arch: allowed
-Depends: gir1.2-glib-2.0 (>= 1.48.0),
+Depends: gir1.2-glib-2.0 (>= 1.64.0),
          ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
@@ -50,9 +48,11 @@ Package: python3-gi-dbg
 Section: debug
 Architecture: any
 Depends: python3-gi (= ${binary:Version}),
+         python3-gi-cairo (= ${binary:Version}),
          ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
+Provides: python3-gi-cairo-dbg (= ${binary:Version})
 Description: Python 3 bindings for gobject-introspection libraries (debug extension)
  GObject is an abstraction layer that allows programming with an object
  paradigm that is compatible with many languages. It is a part of Glib,
@@ -67,7 +67,7 @@ Description: Python 3 bindings for gobject-introspection libraries (debug extens
 Package: python-gi-dev
 Architecture: any
 Depends: libffi-dev (>= 3.3),
-         libglib2.0-dev (>= 2.48.0),
+         libglib2.0-dev (>= 2.64.0),
          python3-gi (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}

@@ -1,4 +1,5 @@
 .gitlab-ci.yml
+.readthedocs.yaml
 COPYING
 MANIFEST.in
 NEWS
@@ -15,15 +16,14 @@ setup.py
 .gitlab-ci/Dockerfile.old
 .gitlab-ci/README.rst
 .gitlab-ci/coverage-docker.sh
-.gitlab-ci/fixup-covpy-paths.py
 .gitlab-ci/fixup-lcov-paths.py
 .gitlab-ci/lcovrc
 .gitlab-ci/run-docker-old.sh
 .gitlab-ci/run-docker-runtime.sh
 .gitlab-ci/run-docker.sh
+.gitlab-ci/set_env.sh
 .gitlab-ci/test-docker-old.sh
 .gitlab-ci/test-docker.sh
-.gitlab-ci/test-flatpak-gtk4.sh
 .gitlab-ci/test-flatpak.sh
 .gitlab-ci/test-msys2.sh
 PyGObject.egg-info/PKG-INFO
@@ -44,6 +44,7 @@ docs/icons.rst
 docs/index.rst
 docs/maintguide.rst
 docs/packagingguide.rst
+docs/requirements.txt
 docs/devguide/building_testing.rst
 docs/devguide/dev_environ.rst
 docs/devguide/index.rst
@@ -290,6 +291,7 @@ tests/test_glib.py
 tests/test_gobject.py
 tests/test_gtk_template.py
 tests/test_gtype.py
+tests/test_gtype_instance.py
 tests/test_import_machinery.py
 tests/test_interface.py
 tests/test_internal_api.py

@@ -93,8 +93,9 @@ class Test(unittest.TestCase):
     @unittest.skipUnless(Gtk, 'no Gtk')
     def test_shared_array_length_with_prior_out_arg(self):
         # Test the 'iter' out argument does not effect length argument skipping.
-        self.assertEqual(Gtk.ListStore.insert_with_valuesv.__doc__,
-                         'insert_with_valuesv(self, position:int, columns:list, values:list) -> iter:Gtk.TreeIter')
+        self.assertRegex(
+            Gtk.ListStore.insert_with_valuesv.__doc__,
+            'insert_with_values.*\\(self, position:int, columns:list, values:list\\) -> iter:Gtk.TreeIter')
 
     def test_sub_class_doc(self):
         class A(GObject.Object):
@@ -130,3 +131,8 @@ class Test(unittest.TestCase):
 
         self.assertEqual(A.__doc__, "custom doc")
         self.assertEqual(B.__doc__, "custom doc")
+
+    def test_return_array_with_length_argument(self):
+        self.assertEqual(
+            GIMarshallingTests.enum_array_return_type.__doc__,
+            "enum_array_return_type() -> list")
