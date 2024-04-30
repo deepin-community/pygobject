@@ -3,6 +3,7 @@ FROM ubuntu:jammy
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
+    software-properties-common \
     build-essential \
     ccache \
     curl \
@@ -30,6 +31,11 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
+RUN add-apt-repository -y ppa:pypy/ppa \
+    && apt-get update \
+    && apt-get install -y pypy3 pypy3-dev pypy3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG HOST_USER_ID=5555
 ENV HOST_USER_ID ${HOST_USER_ID}
 RUN useradd -u $HOST_USER_ID -ms /bin/bash user
@@ -45,15 +51,19 @@ ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 ENV PYTHON_CONFIGURE_OPTS="--enable-shared"
 
 # https://github.com/pyenv/pyenv/releases
-ENV PYENV_GIT_TAG v2.3.19
+ENV PYENV_GIT_TAG v2.3.31
 RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
 
-RUN pyenv install pypy3.8
+# Register the pypy3 system installation
+RUN mkdir -p "${PYENV_ROOT}/versions/pypy3-system/bin/"
+RUN sudo ln -s /usr/bin/pypy3 "${PYENV_ROOT}/versions/pypy3-system/bin/python"
+RUN pyenv rehash
+
 RUN pyenv install --debug 3.8
 RUN pyenv install --debug 3.9
 RUN pyenv install --debug 3.10
 RUN pyenv install --debug 3.11
-RUN pyenv install --debug 3.12.0b2
+RUN pyenv install --debug 3.12
 
 ENV PATH="/usr/lib/ccache:${PATH}"
 

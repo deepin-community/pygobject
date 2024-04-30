@@ -1,4 +1,4 @@
-image: registry.gitlab.gnome.org/gnome/pygobject/main:v21
+image: registry.gitlab.gnome.org/gnome/pygobject/main:v23
 
 stages:
   - build_and_test
@@ -44,7 +44,10 @@ pages:
   stage: deploy
   dependencies:
     - coverage
+  before_script:
+    - python -m pip install -r docs/requirements.txt
   script:
+    - python -m sphinx -T -E -W --keep-going -b html -d _build/doctrees -D language=en docs/ public
     - mv coverage/ public/
   artifacts:
     paths:
@@ -52,6 +55,15 @@ pages:
     expire_in: 30 days
   only:
     - master
+
+sdist:
+  stage: build_and_test
+  artifacts:
+    paths:
+      - dist/
+  script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - bash -x ./.gitlab-ci/build-sdists.sh
 
 mingw32:
   variables:
@@ -99,10 +111,10 @@ python3.12:
     TEST_GTK_VERSION: "3.0"
   <<: *defaults
 
-pypy3.8:
+pypy3:
   allow_failure: true
   variables:
-    PYTHON_VERSION: "pypy3.8"
+    PYTHON_VERSION: "pypy3"
     TEST_GTK_VERSION: "3.0"
   <<: *defaults
 
@@ -142,3 +154,14 @@ gnome-master-gtk4:
     TEST_GTK_VERSION: "4.0"
   script:
     - bash -x ./.gitlab-ci/test-flatpak.sh
+
+minimal-meson:
+  allow_failure: true
+  stage: build_and_test
+  image: quay.io/fedora/fedora:39 
+  before_script:
+    - dnf install --assumeyes gcc meson git flex bison diffutils python3-devel python3-pytest
+  script:
+    - meson setup _build
+    - meson compile -C _build
+    - PYTEST_ADDOPTS="-k 'not test_cairo'" meson test -C _build --verbose

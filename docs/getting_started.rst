@@ -43,10 +43,9 @@ and their dependencies. Follow the instructions for your platform below.
 |windows-logo| :ref:`Windows <windows-getting-started>` |macosx-logo| :ref:`macOS <macosx-getting-started>`  |opensuse-logo| :ref:`openSUSE <opensuse-getting-started>`
 ======================================================= ==================================================== ==========================================================
 
-After running the example application have a look at the "`Python GTK 3
-Tutorial <https://python-gtk-3-tutorial.readthedocs.io>`__" for more examples
-on how to create GTK apps and the "`PyGObject API Reference
-<https://lazka.github.io/pgi-docs>`__" for API documentation for all supported
+After running the example application have a look at the `PyGObject Guide
+<https://rafaelmardojai.pages.gitlab.gnome.org/pygobject-guide>`__ for tutorials on how to create GTK apps and the `GNOME Python API docs
+<https://amolenaar.pages.gitlab.gnome.org/pygobject-docs>`__ for API documentation for all supported
 libraries. There are also typing stubs available here `PyGObject-stubs <https://pypi.org/project/PyGObject-stubs/>`_.
 
 .. _windows-getting-started:
@@ -56,9 +55,9 @@ libraries. There are also typing stubs available here `PyGObject-stubs <https://
 
 #) Go to http://www.msys2.org/ and download the x86_64 installer
 #) Follow the instructions on the page for setting up the basic environment
-#) Run ``C:\msys64\mingw64.exe`` - a terminal window should pop up
+#) Run ``C:\msys64\ucrt64.exe`` - a terminal window should pop up
 #) Execute ``pacman -Suy``
-#) Execute ``pacman -S mingw-w64-x86_64-gtk4 mingw-w64-x86_64-python3 mingw-w64-x86_64-python3-gobject``
+#) Execute ``pacman -S mingw-w64-ucrt-x86_64-gtk4 mingw-w64-ucrt-x86_64-python3 mingw-w64-ucrt-x86_64-python3-gobject``
 #) To test that GTK is working you can run ``gtk4-demo``
 #) Copy the ``hello.py`` script you created to ``C:\msys64\home\<username>``
 #) In the mingw32 terminal execute ``python3 hello.py`` - a window should appear.

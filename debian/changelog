@@ -1,3 +1,63 @@
+pygobject (3.48.2-1) unstable; urgency=medium
+
+  * New upstream release
+    - Fix gst-python1.0 build (Closes: #1065547) (LP: #2057836)
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Sat, 06 Apr 2024 06:49:50 -0400
+
+pygobject (3.48.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 20 Mar 2024 09:05:20 -0400
+
+pygobject (3.47.0-3) unstable; urgency=medium
+
+  * Release to unstable
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 23 Feb 2024 15:15:27 -0500
+
+pygobject (3.47.0-2) experimental; urgency=medium
+
+  * Increase build test timeout
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Tue, 20 Feb 2024 16:02:51 -0500
+
+pygobject (3.47.0-1) experimental; urgency=medium
+
+  * New upstream release
+  * Stop using dh-sequence-gnome
+  * Add debian/salsa-ci.yml
+  * Build with meson
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 19 Feb 2024 21:51:48 -0500
+
+pygobject (3.46.0-3) unstable; urgency=medium
+
+  * Team upload
+  * d/control: Depend on gir1.2-girepository-2.0.
+    This will avoid regressions in packages that assume
+    GIRepository-2.0.typelib is part of gir1.2-glib-2.0, even after it
+    is separated into its own package, as it will need to be during the
+    GNOME 46 release cycle. (Mitigates: #1059623, #1059625, #1059628)
+
+ -- Simon McVittie <smcv@debian.org>  Fri, 29 Dec 2023 18:10:11 +0000
+
+pygobject (3.46.0-2) unstable; urgency=medium
+
+  * Team upload
+  * d/control: Stop generating from d/control.in
+  * d/control: Build-depend on gir1.2-girepository-2.0 if running tests.
+    tests/__init__.py imports this. It's currently part of
+    gir1.2-glib-2.0, but will need to be separated from gir1.2-glib-2.0
+    before src:glib2.0 starts providing that binary package during the
+    GNOME 46/GLib 2.79 cycle.
+  * d/tests/build: Adapt to build with Python 3.12 without warnings.
+    This avoids an (as-yet unreported) autopkgtest failure.
+  * Stop building python3-gi-dbg (Closes: #994330, #803428)
+
+ -- Simon McVittie <smcv@debian.org>  Fri, 29 Dec 2023 17:27:16 +0000
+
 pygobject (3.46.0-1) unstable; urgency=medium
 
   * New upstream release

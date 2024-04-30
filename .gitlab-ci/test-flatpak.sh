@@ -12,9 +12,9 @@ if [[ "$1" == "inflatpak" ]]; then
 
     python3 -m venv _venv
     . _venv/bin/activate
-    python3 -m pip install pytest pytest-faulthandler coverage
-    python3 setup.py build_tests
-    python3 -m coverage run --context "${COV_KEY}" tests/runtests.py
+    pip install pycairo meson meson-python
+    pip install --config-settings=setup-args="-Dtests=true" --no-build-isolation --editable '.[dev]'
+    pytest -v --cov
     python3 -m coverage lcov -o "${COV_DIR}/${COV_KEY}.py.lcov"
     chmod -R 777 "${COV_DIR}"
 else
