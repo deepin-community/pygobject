@@ -67,9 +67,16 @@ How does it work?
     :width: 600px
     :height: 222px
     :align: center
+    :class: only-light
 
-PyGObject uses `glib <https://docs.gtk.org/glib/>`__, `gobject
-<https://docs.gtk.org/gobject/>`__, `girepository
+.. figure:: images/overview-dark.svg
+    :width: 600px
+    :height: 222px
+    :align: center
+    :class: only-dark
+
+PyGObject uses `GLib <https://docs.gtk.org/glib/>`__, `GObject
+<https://docs.gtk.org/gobject/>`__, `GIRepository
 <https://gnome.pages.gitlab.gnome.org/gobject-introspection/girepository/GIRepository.html>`__, `libffi
 <https://sourceware.org/libffi/>`__ and other libraries to access the C
 library (libgtk-4.so) in combination with the additional metadata from the
@@ -92,6 +99,7 @@ Who Is Using PyGObject?
 * `Drawing <https://maoschanz.github.io/drawing/>`__ - a drawing application
 * `Feeds <https://gfeeds.gabmus.org/>`__ - an RSS/Atom feed reader
 * `Gajim <https://gajim.org/>`__ - a fully-featured XMPP client
+* `Gameeky <https://github.com/tchx84/gameeky>`__ - a learning tool for making games and learning experiences
 * `Gaphor <https://gaphor.org/>`__ - a simple modeling tool
 * `Getting Things GNOME! <https://wiki.gnome.org/Apps/GTG>`__ - a personal task organizer
 * `Girens <https://gitlab.gnome.org/tijder/girens>`__ - a Plex client for playing movies, TV shows and music from your Plex library

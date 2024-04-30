@@ -21,10 +21,25 @@ cat <<EOF > pytest.c
 #include <pygobject.h>
 #include <assert.h>
 
-int main()
+#define AT_LEAST_PYTHON(maj, min, mic, level, ser) \
+    (PY_VERSION_HEX >= ((maj << 24) | (min << 16) | (mic << 8) | (level << 4) | (ser)))
+
+int main(void)
 {
     PyObject *gobject;
+#if AT_LEAST_PYTHON(3, 12, 0, 0, 0)
+    PyConfig config;
+    PyStatus status;
 
+    PyConfig_InitPythonConfig (&config);
+    config.buffered_stdio = 0;
+    config.install_signal_handlers = 0;
+    status = Py_InitializeFromConfig (&config);
+    if (PyStatus_Exception (status)) {
+        Py_ExitStatusException (status);
+    }
+    PyConfig_Clear (&config);
+#else
     Py_UnbufferedStdioFlag = 1;
     Py_InitializeEx (FALSE);
     if (PyErr_Occurred ()) {
@@ -32,6 +47,8 @@ int main()
         PyErr_Print ();
         return 1;
     }
+#endif
+
     gobject = pygobject_init (-1, -1, -1);
     if (PyErr_Occurred ()) {
         PySys_WriteStderr ("Error in pygobject_init\n");
@@ -45,44 +62,24 @@ EOF
 
 failed=
 
-for version in $(py3versions -sv); do
-    for tail in "" "-dbg"; do
-        v="${version}${tail}"
+for v in $(py3versions -sv); do
+    pkg="python-${v}-embed"
 
-        case "$version" in
-            (3.[0-7])
-                pkg="python-$v"
-                ;;
-
-            (*)
-                case "$tail" in
-                    (-dbg)
-                        # There is no python-3.8-dbg-embed.pc yet (#944852)
-                        pkg="python-${version}d-embed"
-                        ;;
-                    (*)
-                        pkg="python-${v}-embed"
-                        ;;
-                esac
-                ;;
-        esac
-
-        # Deliberately word-splitting, that's how pkg-config works:
-        # shellcheck disable=SC2046
-        if "${CROSS_COMPILE}gcc" -o "pytest$v" pytest.c $("${CROSS_COMPILE}pkg-config" --cflags --libs "$pkg" pygobject-3.0); then
-            echo "build ($v): OK"
-            [ -x "pytest$v" ]
-            if ./"pytest$v"; then
-                echo "run ($v): OK"
-            else
-                echo "run ($v): FAILED"
-                failed=yes
-            fi
+    # Deliberately word-splitting, that's how pkg-config works:
+    # shellcheck disable=SC2046
+    if "${CROSS_COMPILE}gcc" -o "pytest$v" pytest.c $("${CROSS_COMPILE}pkg-config" --cflags --libs "$pkg" pygobject-3.0); then
+        echo "build ($v): OK"
+        [ -x "pytest$v" ]
+        if ./"pytest$v"; then
+            echo "run ($v): OK"
         else
-            echo "build ($v): FAILED"
+            echo "run ($v): FAILED"
             failed=yes
         fi
-    done
+    else
+        echo "build ($v): FAILED"
+        failed=yes
+     fi
 done
 if [ -n "$failed" ]; then
     exit 1
