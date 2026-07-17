@@ -1,8 +1,10 @@
-project('pygobject', 'c',
-  version : '3.48.2',
+project(
+  'pygobject',
+  'c',
+  version : '3.50.0',
   meson_version : '>= 0.64.0',
-  default_options : [ 'warning_level=1',
-                      'buildtype=debugoptimized'])
+  default_options : ['warning_level=1', 'buildtype=debugoptimized']
+)
 
 pygobject_version = meson.project_version()
 version_arr = pygobject_version.split('.')
@@ -15,8 +17,8 @@ platform_version = '@0@.0'.format(pygobject_version_major)
 pymod = import('python')
 python = pymod.find_installation(get_option('python'), pure: false)
 
-if python.language_version().version_compare('< 3.8')
-  error('Requires Python >= 3.8')
+if python.language_version().version_compare('< 3.9')
+  error('Requires Python >= 3.9')
 endif
 
 python_dep = python.dependency()
@@ -194,10 +196,10 @@ if not for_wheel
 
   pkginfo_conf = configuration_data()
   pkginfo_conf.set('VERSION', py_version)
-  configure_file(input : 'PKG-INFO.in',
-  output : 'PyGObject-@0@.egg-info'.format(py_version),
+  configure_file(input : 'METADATA.in',
+  output : 'METADATA',
   configuration : pkginfo_conf,
-  install_dir : python.get_install_dir(pure : false))
+  install_dir : python.get_install_dir(pure : false) / 'PyGObject-@0@.dist-info'.format(py_version))
 endif
 
 pygobject_dep = declare_dependency(

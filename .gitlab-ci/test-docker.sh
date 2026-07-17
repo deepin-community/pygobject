@@ -32,7 +32,7 @@ source /tmp/venv/bin/activate
 mkdir -p /tmp/venv/include/pypy3.9
 
 python -m pip install --upgrade pip
-python -m pip install flake8 meson meson-python pycairo
+python -m pip install flake8 meson meson-python pycairo pytest pytest-cov
 
 # CODE QUALITY
 python -m flake8
@@ -40,6 +40,7 @@ python -m flake8
 # BUILD & TEST
 python -m pip install --config-settings=setup-args="-Dtests=true" --no-build-isolation --editable '.[dev]'
 
+# TEST
 lcov --config-file .gitlab-ci/lcovrc --directory . --capture --initial --output-file \
     "${COV_DIR}/${CI_JOB_NAME}-baseline.lcov"
 

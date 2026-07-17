@@ -4,7 +4,6 @@ sources = [
   'pygflags.c',
   'pyginterface.c',
   'pygobject-object.c',
-  'pygparamspec.c',
   'pygpointer.c',
   'pygoptioncontext.c',
   'pygoptiongroup.c',
@@ -17,6 +16,7 @@ sources = [
   'pygi-source.c',
   'pygi-argument.c',
   'pygi-resulttuple.c',
+  'pygi-async.c',
   'pygi-type.c',
   'pygi-boxed.c',
   'pygi-closure.c',
@@ -45,6 +45,7 @@ headers = [
 install_headers(headers, subdir : 'pygobject-@0@'.format(platform_version))
 
 python_sources = [
+  'events.py',
   '_constants.py',
   'docstring.py',
   '_error.py',

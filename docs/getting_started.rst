@@ -43,17 +43,18 @@ and their dependencies. Follow the instructions for your platform below.
 |windows-logo| :ref:`Windows <windows-getting-started>` |macosx-logo| :ref:`macOS <macosx-getting-started>`  |opensuse-logo| :ref:`openSUSE <opensuse-getting-started>`
 ======================================================= ==================================================== ==========================================================
 
-After running the example application have a look at the `PyGObject Guide
-<https://rafaelmardojai.pages.gitlab.gnome.org/pygobject-guide>`__ for tutorials on how to create GTK apps and the `GNOME Python API docs
+After running the example application have a look at the :doc:`/tutorials/index` for an overview of how to create GTK apps and the `GNOME Python API docs
 <https://amolenaar.pages.gitlab.gnome.org/pygobject-docs>`__ for API documentation for all supported
-libraries. There are also typing stubs available here `PyGObject-stubs <https://pypi.org/project/PyGObject-stubs/>`_.
+libraries. 
+
+For full IDE support (incl. autocomplete) you will also need typing stubs available here `PyGObject-stubs <https://pypi.org/project/PyGObject-stubs/>`_.
 
 .. _windows-getting-started:
 
 |windows-logo| Windows
 ----------------------
 
-#) Go to http://www.msys2.org/ and download the x86_64 installer
+#) Go to https://www.msys2.org/ and download the x86_64 installer
 #) Follow the instructions on the page for setting up the basic environment
 #) Run ``C:\msys64\ucrt64.exe`` - a terminal window should pop up
 #) Execute ``pacman -Suy``

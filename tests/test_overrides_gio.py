@@ -1,10 +1,11 @@
-import random
+import os
 import platform
+import random
 import warnings
 
 import pytest
 
-from gi.repository import Gio, GObject
+from gi.repository import Gio, GLib, GObject
 from gi import PyGIWarning
 
 
@@ -358,3 +359,70 @@ def test_types_init_warn():
             warnings.simplefilter('always')
             t()
             assert issubclass(warn[0].category, PyGIWarning)
+
+
+def test_file_fspath():
+    file, stream = Gio.File.new_tmp('TestGFile.XXXXXX')
+    content = b'hello\0world\x7F!'
+    stream.get_output_stream().write_bytes(GLib.Bytes(content))
+    stream.close()
+    path = file.peek_path()
+    assert isinstance(path, str)
+    fspath = file.__fspath__()
+    assert isinstance(fspath, str)
+    assert fspath == path
+
+    with open(file, 'rb') as file_like:
+        assert file_like.read() == content
+
+
+def test_file_fspath_with_no_path():
+    file = Gio.File.new_for_path('')
+    path = file.peek_path()
+    # In older versions of GLib, creating a GFile for an empty path will result
+    # in one representing the current pwd instead of a GDummyFile with no path.
+    if path is None:
+        with pytest.raises(TypeError):
+            file.__fspath__()
+    else:
+        assert path == file.__fspath__()
+        assert path == os.getcwd()
+
+
+@pytest.mark.skipif(
+    not hasattr(Gio.ListStore, "find_with_equal_func_full"),
+    reason="ListStore.find_with_equal_func_full() is available in Gio 2.74"
+)
+def test_list_store_find_with_equal_func():
+
+    def test(*user_data):
+        class TestObject(GObject.Object):
+            def __init__(self, val):
+                super().__init__()
+                self.val = val
+
+        NUM = 5
+        data = [TestObject(i) for i in range(NUM)]
+        list_store = Gio.ListStore()
+        for d in data:
+            list_store.append(d)
+
+        def equal_func(a, b, *data):
+            assert data == user_data
+            return a.val == b.val
+
+        for i in range(NUM):
+            res, position = (list_store.find_with_equal_func(
+                data[i], equal_func, *user_data
+            ))
+            assert res
+            assert position == i
+
+        not_in_list_store = TestObject(NUM + 1)
+        res, position = (list_store.find_with_equal_func(
+            not_in_list_store, equal_func, *user_data
+        ))
+        assert not res
+
+    test()
+    test((100, "data"))

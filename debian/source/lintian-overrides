@@ -1,0 +1,2 @@
+# We build with Meson directly, not via mesonpy
+missing-prerequisite-for-pyproject-backend mesonpy (*) [pyproject.toml:*]

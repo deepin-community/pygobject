@@ -28,6 +28,8 @@ to move to PyGObject and GStreamer 1.0 at the same time.
 **pygobject 2** supports glib 2.0 and Python 2. The new bindings also support
 glib 2.0 and Python 2/3.
 
+.. note::
+    Python 2 is no longer supported since PyGObject 3.38.0.
 
 General Porting Tips
 --------------------
@@ -58,7 +60,7 @@ to port your code to GTK 3.0 right away.
 
 For some general advice regarding the migration from GTK 2.0 to 3.0 see the
 `offical migration guide
-<https://developer.gnome.org/gtk3/stable/gtk-migrating-2-to-3.html>`__. If you
+<https://docs.gtk.org/gtk3/migrating-2to3.html>`__. If you
 need to know how a C symbol is exposed in Python have a look at the `symbol
 mapping listing <https://lazka.github.io/pgi-docs/#Gtk-3.0/mapping.html>`__.
 

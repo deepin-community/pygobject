@@ -22,8 +22,8 @@
 import sys
 import warnings
 
-from gi.repository import GObject
-from .._ossighelper import wakeup_on_signal, register_sigint_fallback
+from gi.repository import GObject, GLib
+from .._ossighelper import register_sigint_fallback, get_event_loop
 from .._gtktemplate import Template, _extract_handler_and_args
 from ..overrides import (override, strip_boolean_result, deprecated_init,
                          wrap_list_store_sort_func)
@@ -159,9 +159,6 @@ if GTK3:
 
         def __bool__(self):
             return True
-
-        # alias for Python 2.x object protocol
-        __nonzero__ = __bool__
 
         def child_get_property(self, child, property_name, value=None):
             if value is None:
@@ -570,7 +567,7 @@ class Dialog(Gtk.Dialog, Container):
 
         def run(self, *args, **kwargs):
             with register_sigint_fallback(self.destroy):
-                with wakeup_on_signal():
+                with get_event_loop(GLib.MainContext.default()).running(self.destroy):
                     return Gtk.Dialog.run(self, *args, **kwargs)
 
         action_area = property(lambda dialog: dialog.get_action_area())
@@ -803,10 +800,6 @@ class TreeModel(Gtk.TreeModel):
 
     def __bool__(self):
         return True
-
-    if GTK3:
-        # alias for Python 2.x object protocol
-        __nonzero__ = __bool__
 
     def _getiter(self, key):
         if isinstance(key, Gtk.TreeIter):
@@ -1189,10 +1182,6 @@ class TreeModelRowIter(object):
         row = TreeModelRow(self.model, self.iter)
         self.iter = self.model.iter_next(self.iter)
         return row
-
-    if GTK3:
-        # alias for Python 2.x object protocol
-        next = __next__
 
     def __iter__(self):
         return self
@@ -1690,8 +1679,21 @@ if GTK3:
     @override(Gtk.main)
     def main(*args, **kwargs):
         with register_sigint_fallback(Gtk.main_quit):
-            with wakeup_on_signal():
+            with get_event_loop(GLib.MainContext.default()).running(Gtk.main_quit):
                 return _Gtk_main(*args, **kwargs)
+
+    _Gtk_main_iteration = Gtk.main_iteration
+    _Gtk_main_iteration_do = Gtk.main_iteration_do
+
+    @override(Gtk.main_iteration)
+    def main_iteration():
+        with get_event_loop(GLib.MainContext.default()).paused():
+            return _Gtk_main_iteration()
+
+    @override(Gtk.main_iteration)
+    def main_iteration_do(blocking):
+        with get_event_loop(GLib.MainContext.default()).paused():
+            return _Gtk_main_iteration_do(blocking)
 
 
 if GTK3:
