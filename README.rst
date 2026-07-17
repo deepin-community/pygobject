@@ -6,17 +6,48 @@
 |
 
 **PyGObject** is a Python package which provides bindings for `GObject
-<https://developer.gnome.org/gobject/stable/>`__ based libraries such as `GTK
+<https://docs.gtk.org/gobject/>`__ based libraries such as `GTK
 <https://www.gtk.org/>`__, `GStreamer <https://gstreamer.freedesktop.org/>`__,
 `WebKitGTK <https://webkitgtk.org/>`__, `GLib
-<https://developer.gnome.org/glib/stable/>`__, `GIO
-<https://developer.gnome.org/gio/stable/>`__ and many more.
+<https://docs.gtk.org/glib/>`__, `GIO
+<https://docs.gtk.org/gio/>`__ and many more.
 
-It supports Linux, Windows and macOS and works with **Python 3.8+** and
+It supports Linux, Windows, and macOS and works with **Python 3.9+** and
 **PyPy3**. PyGObject, including this documentation, is licensed under the
 **LGPLv2.1+**.
 
+Homepage
+--------
 
-----
+https://pygobject.gnome.org
 
-For more information visit https://gnome.pages.gitlab.gnome.org/pygobject
+Installation
+------------
+
+The latest version from PyGObject can be installed from `PyPI <https://pypi.org/project/PyGObject/>`__:
+
+    pip install PyGObject
+
+PyGObject is only distributed as source distribution, so you need a C compiler installed on your host.
+
+Please have a look at our `Getting Started <https://pygobject.gnome.org/getting_started.html>`__ documentation
+for OS specific installation instructions.
+
+Development
+~~~~~~~~~~~
+
+Our website contains instructions on how to `set up a development environment
+<https://pygobject.gnome.org/devguide/dev_environ.html>`__.
+
+Default branch renamed to ``main``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default development branch of PyGObject has been renamed
+to ``main``. To update your local checkout, use::
+
+    git checkout master
+    git branch -m master main
+    git fetch
+    git branch --unset-upstream
+    git branch -u origin/main
+    git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main

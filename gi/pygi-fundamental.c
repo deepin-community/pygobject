@@ -45,7 +45,8 @@ fundamental_dealloc (PyGIFundamental *self)
     self->instance = NULL;
 
     PyObject_GC_UnTrack ((PyObject *) self);
-    PyObject_ClearWeakRefs ((PyObject *) self);
+    if (self->weaklist)
+        PyObject_ClearWeakRefs ((PyObject *) self);
 
     Py_TYPE (self)->tp_free ((PyObject *) self);
 }
@@ -191,6 +192,13 @@ _pygi_fundamental_new_internal (PyTypeObject *type,
     self->ref_func = g_object_info_get_ref_function_pointer (info);
     self->unref_func = g_object_info_get_unref_function_pointer (info);
 
+    /* A special case for GParamSpec. It has a floating reference when created.
+     * We make sure we have a proper reference, so we can ref/unref normally.
+     */
+    if (G_TYPE_IS_PARAM (self->gtype)) {
+        g_param_spec_ref_sink (self->instance);
+    }
+
     g_base_info_unref (info);
 
     return self;
@@ -235,6 +243,7 @@ pygi_fundamental_register_types (PyObject *m)
     PyGIFundamental_Type.tp_richcompare = fundamental_richcompare;
     PyGIFundamental_Type.tp_repr = (reprfunc) fundamental_repr;
     PyGIFundamental_Type.tp_hash = (hashfunc) fundamental_hash;
+    PyGIFundamental_Type.tp_weaklistoffset = offsetof(PyGIFundamental, weaklist);
 
     if (PyType_Ready (&PyGIFundamental_Type))
         return -1;

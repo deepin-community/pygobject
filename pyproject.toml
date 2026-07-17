@@ -1,14 +1,16 @@
 [project]
 name = "PyGObject"
-version = "3.48.2"
 description = "Python bindings for GObject Introspection"
+readme = 'README.rst'
 license = { text = "GNU Lesser General Public License v2.1 (LGPLv2.1)" }
 authors = [
     { name="James Henstridge", email="james@daa.com.au" }
 ]
 maintainers = [
-    { name="Simon Feltman", email="sfeltman@src.gnome.org" },
-    { name="Christoph Reiter" },
+    { name="Christoph Reiter", email="creiter@src.gnome.org" },
+    { name="Arjan Molenaar", email="amolenaar@gnome.org" },
+    { name="Dan Yeaw", email="danyeaw@gnome.org" },
+    { name="Ignacio Casal Quinteiro", email="icq@gnome.org" },
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -20,26 +22,44 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.8, <4"
+requires-python = ">=3.9, <4.0"
 dependencies = [
     "pycairo>=1.16"
 ]
+dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://gnome.pages.gitlab.gnome.org/pygobject"
+Homepage = "https://pygobject.gnome.org"
 Repository = "https://gitlab.gnome.org/GNOME/pygobject.git"
-Changelog = "https://gitlab.gnome.org/GNOME/pygobject/-/blob/master/NEWS"
+Changelog = "https://gitlab.gnome.org/GNOME/pygobject/-/blob/main/NEWS"
 
-[project.optional-dependencies]
-dev = [
+[tool.pdm.dev-dependencies]
+build = [
+    "setuptools",
+    "meson-python",
+    "ninja",
+    "pycairo",
+]
+test = [
     "pytest",
     "pytest-cov",
     "flake8",
 ]
 docs = [
-    "sphinx>=4.0,<5.0",
-    "sphinx-rtd-theme>=0.5,<2.0",
+    "sphinx",
+    "sphinx-rtd-theme",
+    "sphinx-copybutton>=0.5.2",
+    "furo",
 ]
+
+[tool.pdm.options]
+install = [
+    "--no-isolation",
+    "--config-setting=setup-args=-Dtests=true",
+    "--config-setting=setup-args=-Dbuildtype=debug",
+    "--config-setting=editable-verbose=true",
+]
+build = ["--no-wheel"]
 
 [tool.meson-python.args]
 setup = ["-Dtests=false", "-Dwheel=true", "--wrap-mode=nofallback"]
