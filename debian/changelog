@@ -1,3 +1,9 @@
+pygobject (3.48.2-1deepin1) unstable; urgency=medium
+
+  * Backport the upstream fix for the g-i _GI_TEST_EXTERN macro rename.
+
+ -- Tianyu Chen <sweetyfish@deepin.org>  Thu, 12 Nov 2026 17:51:58 +0800
+
 pygobject (3.48.2-1) unstable; urgency=medium
 
   * New upstream release
