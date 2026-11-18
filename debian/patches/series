@@ -1,1 +1,2 @@
 tests-adjust-for-g-i-_GI_TEST_EXTERN-macro-rename.patch
+Marshalling-tests-can-also-return-struct-name.patch

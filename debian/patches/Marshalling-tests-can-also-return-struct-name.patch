@@ -1,0 +1,28 @@
+From: Arjan Molenaar <gaphor@gmail.com>
+Date: Sun, 21 Jul 2024 22:58:06 +0200
+Subject: Marshalling tests can also return struct name
+
+Fixes test failures in Flatpak builds.
+---
+ tests/test_gi.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/test_gi.py b/tests/test_gi.py
+index f59b3ec..283577e 100644
+--- a/tests/test_gi.py
++++ b/tests/test_gi.py
+@@ -2269,12 +2269,12 @@ class TestStructure(unittest.TestCase):
+         self.assertRegex(
+             repr(GIMarshallingTests.PointerStruct()),
+             r"<GIMarshallingTests.PointerStruct object at 0x[^\s]+ "
+-            r"\(void at 0x[^\s]+\)>")
++            r"\((void|GIMarshallingTestsPointerStruct) at 0x[^\s]+\)>")
+ 
+         self.assertRegex(
+             repr(GIMarshallingTests.SimpleStruct()),
+             r"<GIMarshallingTests.SimpleStruct object at 0x[^\s]+ "
+-            r"\(void at 0x[^\s]+\)>")
++            r"\((void|GIMarshallingTestsSimpleStruct) at 0x[^\s]+\)>")
+ 
+         self.assertRegex(
+             repr(GIMarshallingTests.Union()),
